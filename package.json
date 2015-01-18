@@ -13,5 +13,8 @@
   "bugs": {
     "url": "https://github.com/Prince86EKNJ/hitbuttonheroes/issues"
   },
-  "homepage": "https://github.com/Prince86EKNJ/hitbuttonheroes"
+  "homepage": "https://github.com/Prince86EKNJ/hitbuttonheroes",
+  "devDependencies": {
+    "http-server": "^0.7.4"
+  }
 }
