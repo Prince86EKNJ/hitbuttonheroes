@@ -1,4 +1,42 @@
-#!/bin/bash
-PATH=node_modules/.bin:$PATH
-BUILD_DIR=app/scripts
-browserify --debug src/index.js | exorcist $BUILD_DIR/main.js.map > $BUILD_DIR/main.js
+#!/usr/bin/env node
+var getopt = require("node-getopt");
+var browserify = require("browserify");
+var exorcist = require("exorcist");
+var fs = require("fs");
+var watch = require("glob-watcher");
+
+var buildDir = "./app/scripts/";
+var outFile = "main.js";
+var mapExt = ".map";
+
+var opts = getopt.create([
+	["w", "watch", "watch source files"],
+	["h", "help", "show this help"]
+])
+.bindHelp()
+.parseSystem()
+.options;
+
+var out = process.stdout;
+
+var build = function()
+{
+	out.write("Starting build... ");
+
+	browserify({ debug: true })
+		.add("./src/index.js")
+		.bundle()
+		.pipe(exorcist(buildDir+outFile+mapExt))
+		.pipe(fs.createWriteStream(buildDir+outFile, "utf8"));
+
+	out.write("build complete!\n");
+};
+
+if(opts.watch)
+{
+	console.log("Watching source files...");
+	var watcher = watch(["./src/*.js"]);
+	watcher.on("change", build);
+}
+
+build();
