@@ -1,1 +1,1 @@
-browserify src/index.js > app/scripts/main2.js
+browserify --debug src/index.js > app/scripts/main.js

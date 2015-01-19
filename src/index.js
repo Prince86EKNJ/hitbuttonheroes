@@ -1,3 +1,5 @@
+console.log("HitButtonHeroes!");
+
 var _ = require("lodash");
 var $ = require("jquery");
 var clock = require("./clock");
