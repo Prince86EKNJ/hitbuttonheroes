@@ -1,23 +1,17 @@
 console.log("HitButtonHeroes!");
 
-var _ = require("lodash");
 var $ = require("jquery");
-var clock = require("./clock");
 
-var numbers = [1, 1, 2, 3, 5, 8, 13, 21];
+var _ = require("./royal-lodash");
 
-var fps = 2;
+var fps = 30;
 
 $(function()
 {
-	_.each(numbers, function(x)
-	{
-		console.log("Out: "+(x*2+3));
-		$("body").append("<p>Number "+x+"</p>");
-	});
+	$("body").append('<p>Time: <span class="time"></span></p>');
 
-	clock.build(Date.now, 1000/fps, function(time)
+	_.watch(Date.now, 1000/fps, function(time)
 	{
-		console.log("Time: "+time);
+		$(".time").text(time);
 	});
 });
