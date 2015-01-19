@@ -1,1 +1,4 @@
-browserify --debug src/index.js > app/scripts/main.js
+#!/bin/bash
+PATH=node_modules/.bin:$PATH
+BUILD_DIR=app/scripts
+browserify --debug src/index.js | exorcist $BUILD_DIR/main.js.map > $BUILD_DIR/main.js
