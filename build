@@ -1,15 +1,20 @@
 #!/usr/bin/env node
+var exec = require("child_process").exec;
+var fs = require("fs");
+
 var getopt = require("node-getopt");
 var browserify = require("browserify");
 var exorcist = require("exorcist");
-var fs = require("fs");
 var watch = require("glob-watcher");
+
+var inputFile = "./src/index.js";
 
 var buildDir = "./app/scripts/";
 var outFile = "main.js";
 var mapExt = ".map";
 
 var opts = getopt.create([
+	["r", "run=SCRIPT", "run script after build"],
 	["w", "watch", "watch source files"],
 	["h", "help", "show this help"]
 ])
@@ -23,13 +28,24 @@ var build = function()
 {
 	out.write("Starting build... ");
 
-	browserify({ debug: true })
-		.add("./src/index.js")
-		.bundle()
-		.pipe(exorcist(buildDir+outFile+mapExt))
-		.pipe(fs.createWriteStream(buildDir+outFile, "utf8"));
+	var bundle = browserify({ debug: true })
+		.add(inputFile)
+		.bundle();
 
-	out.write("build complete!\n");
+	var buildOut = fs.createWriteStream(buildDir+outFile, "utf8")
+	buildOut.on("finish", function()
+	{
+		out.write("build complete!\n");
+
+		if(opts.run)
+		{
+			console.log("Running `"+opts.run+"`");
+			exec(opts.run);
+		}
+	});
+
+	//bundle.pipe(exorcist(buildDir+outFile+mapExt)).pipe(buildOut);
+	bundle.pipe(buildOut);
 };
 
 if(opts.watch)
