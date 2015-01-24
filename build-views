@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+var fs = require("fs");
+var _ = require("lodash");
+
+var viewDir = "view/";
+
+var getViewData = function(viewName)
+{
+	return fs.readFileSync(viewDir+viewName, "utf-8");
+}
+
+var viewFiles = fs.readdirSync(viewDir);
+
+var views = {};
+_.each(viewFiles, function(viewName)
+{
+	var viewData = getViewData(viewName);
+	views[viewName] = viewData;
+});
+var viewsStr = JSON.stringify(views);
+
+// Write viewsData to file
+fs.writeFileSync("app/data/views.json", viewsStr, "utf-8");
