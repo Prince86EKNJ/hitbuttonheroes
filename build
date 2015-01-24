@@ -5,7 +5,7 @@ var fs = require("fs");
 var getopt = require("node-getopt");
 var browserify = require("browserify");
 var exorcist = require("exorcist");
-var watch = require("glob-watcher");
+var Gaze = require("gaze").Gaze;
 
 var inputFile = "./src/index.js";
 
@@ -51,8 +51,9 @@ var build = function()
 if(opts.watch)
 {
 	console.log("Watching source files...");
-	var watcher = watch(["./src/*.js"]);
-	watcher.on("change", build);
+
+	var gaze = new Gaze("src/*.js");
+	gaze.on("all", build);
 }
 
 build();
