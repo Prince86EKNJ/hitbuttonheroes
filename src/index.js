@@ -9,11 +9,15 @@ var fps = 30;
 
 $(function()
 {
-	$("body").append('<p>Time: <span class="time"></span></p>');
-	$("body").append('<p><input type="text" v-model="dataValue"/></p>');
+	var bodyEl = $("body");
+	bodyEl.append('<p>Time: <span class="time"></span></p>');
+	bodyEl.append('<p><input type="text" v-model="dataValue"/></p>');
 
 	var data = { dataValue: "Your Mom is da bomb!" };
-	console.log(Vue);
+
+	//var timeDemo = bodyEl.install("time-demo", data);
+	//timeDemo.destroy();
+
 	new Vue({
 		el: "body",
 		data: data
