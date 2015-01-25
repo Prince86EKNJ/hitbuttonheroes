@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* vim: set filetype=javascript : */
+
 var exec = require("child_process").exec;
 var fs = require("fs");
 var Gaze = require("gaze").Gaze;
