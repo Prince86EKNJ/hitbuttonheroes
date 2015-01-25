@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+var fs = require("fs");
+var browserify = require("browserify");
+var exorcist = require("exorcist");
+var getopt = require("node-getopt");
+
+var opts = getopt.create([
+	["e", "extract", "extract source map"],
+	["h", "help", "show this help"]
+])
+.bindHelp()
+.parseSystem()
+.options;
+
+var inputFile = "./src/index.js";
+var buildDir = "./app/scripts/";
+var outFile = "main.js";
+var mapExt = ".map";
+
+var buildOut = fs.createWriteStream(buildDir+outFile, "utf8")
+
+var output = browserify({ debug: true })
+	.add(inputFile)
+	.bundle();
+
+if(opts.extract)
+{
+	output = output.pipe(exorcist(buildDir+outFile+mapExt))
+}
+
+output.pipe(buildOut);

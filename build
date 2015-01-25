@@ -1,20 +1,13 @@
 #!/usr/bin/env node
 var exec = require("child_process").exec;
 var fs = require("fs");
-
-var getopt = require("node-getopt");
-var browserify = require("browserify");
-var exorcist = require("exorcist");
 var Gaze = require("gaze").Gaze;
-
-var inputFile = "./src/index.js";
-
-var buildDir = "./app/scripts/";
-var outFile = "main.js";
-var mapExt = ".map";
+var getopt = require("node-getopt");
+var shell = require("shelljs");
 
 var opts = getopt.create([
 	["r", "run=SCRIPT", "run script after build"],
+	["V", "views", "run (and watch if \"-w\") build-views script"],
 	["w", "watch", "watch source files"],
 	["h", "help", "show this help"]
 ])
@@ -26,27 +19,30 @@ var out = process.stdout;
 
 var build = function()
 {
-	out.write("Starting build... ");
+	runBuildScript("build-src");
 
-	var bundle = browserify({ debug: true })
-		.add(inputFile)
-		.bundle();
-
-	var buildOut = fs.createWriteStream(buildDir+outFile, "utf8")
-	buildOut.on("finish", function()
+	if(opts.run)
 	{
-		out.write("build complete!\n");
-
-		if(opts.run)
-		{
-			console.log("Running `"+opts.run+"`");
-			exec(opts.run);
-		}
-	});
-
-	//bundle.pipe(exorcist(buildDir+outFile+mapExt)).pipe(buildOut);
-	bundle.pipe(buildOut);
+		out.write("Running `"+opts.run+"`...");
+		shell.exec(opts.run);
+		out.write(" Done!\n");
+	}
 };
+
+var runBuildScript = function(scriptName)
+{
+	out.write("Running \""+scriptName+"\"... ");
+
+	var result = shell.exec("./"+scriptName).code;
+
+	if(result == 0)
+		out.write("Complete!\n");
+	else
+	{
+		out.write("failed.\n");
+		throw new Error("`"+scriptName+"` failed and returned: "+result);
+	}
+}
 
 if(opts.watch)
 {
