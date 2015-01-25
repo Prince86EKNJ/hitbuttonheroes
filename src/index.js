@@ -4,27 +4,23 @@ var $ = require("jquery");
 var Vue = require("vue");
 
 var _ = require("./royal-lodash");
+var widget = require("./widget");
 
 var fps = 30;
 
 $(function()
 {
-	var bodyEl = $("body");
-	bodyEl.append('<p>Time: <span class="time"></span></p>');
-	bodyEl.append('<p><input type="text" v-model="dataValue"/></p>');
-
-	var data = { dataValue: "Your Mom is da bomb!" };
-
-	//var timeDemo = bodyEl.install("time-demo", data);
-	//timeDemo.destroy();
-
-	new Vue({
-		el: "body",
-		data: data
-	});
-
-	_.watch(Date.now, 1000/fps, function(time)
+	$.get("/data/views.json", function(views)
 	{
-		$(".time").text(data.dataValue+":"+time);
+		var install = widget(views);
+
+		var data = { dataValue: "Your Mom is da bomb!", time: 0 };
+		install("body", "time-demo", data);
+
+		_.watch(Date.now, 1000/fps, function(time)
+		{
+			$(".time").text(data.dataValue+":"+time);
+			data.time = time;
+		});
 	});
 });
