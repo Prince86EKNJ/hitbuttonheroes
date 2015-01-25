@@ -1,60 +1,103 @@
 #!/usr/bin/env node
 var exec = require("child_process").exec;
 var fs = require("fs");
-var Gaze = require("gaze").Gaze;
+var gaze = require("gaze");
+var Gaze = gaze.Gaze;
+var _ = require("lodash");
 var getopt = require("node-getopt");
 var shell = require("shelljs");
 
+var out = process.stdout;
+
+var builds =
+{
+	src:
+	{
+		script: "build-src",
+		watch: "src/*.js"
+	},
+	views:
+	{
+		script: "build-views",
+		watch: "view/*"
+	}
+};
+
 var opts = getopt.create([
 	["r", "run=SCRIPT", "run script after build"],
-	["V", "views", "run (and watch if \"-w\") build-views script"],
 	["w", "watch", "watch source files"],
 	["h", "help", "show this help"]
 ])
 .bindHelp()
-.parseSystem()
-.options;
+.parseSystem();
+var options = opts.options;
 
-var out = process.stdout;
+var buildRunScriptFunc = function(scriptName)
+{
+	var runBuildScript = function()
+	{
+		out.write("Running \""+scriptName+"\"... ");
+
+		var result = shell.exec("./"+scriptName).code;
+
+		if(result == 0)
+			out.write("Complete!\n");
+		else
+		{
+			out.write("failed.\n");
+			throw new Error("`"+scriptName+"` failed and returned: "+result);
+		}
+	}
+
+	return runBuildScript;
+}
+
+_.each(builds, function(build)
+{
+	var runBuildFunc = buildRunScriptFunc(build.script);
+	build["buildFunc"] = runBuildFunc;
+});
+
+var runAfterCommand = function()
+{
+	out.write("Running `"+options.run+"`...");
+	shell.exec(options.run);
+	out.write(" Done!\n");
+};
 
 var build = function()
 {
-	runBuildScript("build-src");
-	if(opts.views)
-		runBuildScript("build-views");
-
-	if(opts.run)
+	_.each(opts.argv, function(arg)
 	{
-		out.write("Running `"+opts.run+"`...");
-		shell.exec(opts.run);
-		out.write(" Done!\n");
-	}
+		builds[arg].buildFunc();
+	});
+
+	if(options.run)
+		runAfterCommand();
 };
 
-var runBuildScript = function(scriptName)
-{
-	out.write("Running \""+scriptName+"\"... ");
-
-	var result = shell.exec("./"+scriptName).code;
-
-	if(result == 0)
-		out.write("Complete!\n");
-	else
-	{
-		out.write("failed.\n");
-		throw new Error("`"+scriptName+"` failed and returned: "+result);
-	}
-}
-
-if(opts.watch)
+if(options.watch)
 {
 	console.log("Watching source files...");
 
-	var gazeSrc = new Gaze("src/*.js");
-	gazeSrc.on("all", build);
+	_.each(opts.argv, function(arg)
+	{
+		var watchStr = builds[arg].watch;
 
-	var gazeViews = new Gaze("view/*");
-	gazeViews.on("all", build);
+		console.log("Watching: "+watchStr+" for "+arg);
+
+		gaze(watchStr, function(err, watcher)
+		{
+			watcher.on("all", function(event, filepath)
+			{
+				console.log(watcher);
+				console.log(event);
+				console.log(filepath);
+				builds[arg].buildFunc();
+				runAfterCommand();
+			});
+		});
+	});
 }
 
 build();
