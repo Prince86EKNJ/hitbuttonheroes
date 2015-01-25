@@ -20,6 +20,8 @@ var out = process.stdout;
 var build = function()
 {
 	runBuildScript("build-src");
+	if(opts.views)
+		runBuildScript("build-views");
 
 	if(opts.run)
 	{
@@ -48,8 +50,11 @@ if(opts.watch)
 {
 	console.log("Watching source files...");
 
-	var gaze = new Gaze("src/*.js");
-	gaze.on("all", build);
+	var gazeSrc = new Gaze("src/*.js");
+	gazeSrc.on("all", build);
+
+	var gazeViews = new Gaze("view/*");
+	gazeViews.on("all", build);
 }
 
 build();
