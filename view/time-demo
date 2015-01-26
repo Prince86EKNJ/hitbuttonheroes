@@ -1,2 +1,1 @@
-<p>Time: <span class="time"></span></p>
-<p><input type="text" v-model="time"/></p>
+<p>Time: {{ time }}</p>

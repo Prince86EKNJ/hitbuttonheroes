@@ -12,13 +12,21 @@ var init = function(views)
 {
 	var install = widget(views);
 
-	var data = { dataValue: "Your Mom is da bomb!", time: 0 };
+	var data = { time: 0 };
 	install("body", "time-demo", data);
+
+	var meterData =
+	{
+		width: 500,
+		progress: 0.1,
+		msg: "This is a meter"
+	};
+	install("body", "meter", meterData);
 
 	_.watch(Date.now, 1000/fps, function(time)
 	{
-		$(".time").text(data.dataValue+":"+time);
 		data.time = time;
+		meterData.progress = (time % 5000) / 5000;
 	});
 };
 
