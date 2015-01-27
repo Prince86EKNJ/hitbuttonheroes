@@ -1,0 +1,17 @@
+{
+	"src":
+	{
+		"script": "build-src",
+		"watch": "src/*.js"
+	},
+	"views":
+	{
+		"script": "build-views",
+		"watch": "view/*"
+	},
+	"styles":
+	{
+		"script": "build-styles",
+		"watch": "style/*.less"
+	}
+}
