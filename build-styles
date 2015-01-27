@@ -1,0 +1,3 @@
+#!/bin/bash
+LESSC=node_modules/.bin/lessc
+$LESSC style/main.less >! app/styles/main.css
