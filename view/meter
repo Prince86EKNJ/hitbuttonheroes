@@ -1,10 +1,10 @@
 <!-- vim: set filetype=html : -->
-<div style="width: {{width}}px; border: 2px solid black; padding: 2px;">
-	<div style="position: relative;">
-		<div style="background-color: red; width: {{progress*100}}%; white-space: nowrap; overflow: hidden; position: absolute; top: 0px; left: 0px;">
+<div class="outer" style="width: {{width}}px;">
+	<div class="inner">
+		<div class="msg">
 			{{msg}}
 		</div>
-		<div style="width: 100%; white-space: nowrap; overflow: hidden; position: absolute; top: 0px; left: 0px;">
+		<div class="bar" style="width: {{progress*100}}%;">
 			{{msg}}
 		</div>
 		&nbsp;

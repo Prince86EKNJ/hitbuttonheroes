@@ -95,8 +95,16 @@ if(options.watch)
 			if(!matches)
 				return;
 
-			builds[arg].buildFunc();
-			runAfterCommand();
+			try
+			{
+				builds[arg].buildFunc();
+				runAfterCommand();
+			}
+			catch (e)
+			{
+				console.error("An error occured while trying to build: "+arg);
+				console.error(e);
+			}
 		});
 	});
 }
