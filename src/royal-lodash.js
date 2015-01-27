@@ -12,8 +12,4 @@ _.mixin(
 	}
 });
 
-var build = function(timeFunc, interval, outFunc)
-{
-};
-
 module.exports = _;
